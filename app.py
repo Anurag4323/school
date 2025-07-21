@@ -16,6 +16,7 @@ app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', '1234')
 app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'school_db')
 app.config['MYSQL_CURSORCLASS'] = os.environ.get('MYSQL_CURSORCLASS', 'DictCursor')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 CORS(app)
 mysql = MySQL(app)
 
