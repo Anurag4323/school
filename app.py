@@ -1,6 +1,6 @@
 # app.py
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 import os
@@ -19,6 +19,10 @@ app.config['MYSQL_CURSORCLASS'] = os.environ.get('MYSQL_CURSORCLASS', 'DictCurso
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 CORS(app)
 mysql = MySQL(app)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 # --- API Endpoints for Students and Marks ---
 
