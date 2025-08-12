@@ -1,356 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Management</title>
     <!-- Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom font */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Simple transition for better UX */
-        .transition-all {
-            transition: all 0.3s ease-in-out;
-        }
+      /* Custom font */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Simple transition for better UX */
+      .transition-all {
+        transition: all 0.3s ease-in-out;
+      }
     </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
-
+  </head>
+  <body class="bg-[#fffdf0] text-gray-800">
     <div class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <header class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900">Student Management Dashboard</h1>
-            <p class="text-gray-600 mt-2">Manage students, their subjects, and marks.</p>
-        </header>
-
-        <!-- Form for Adding and Editing Students -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 id="form-title" class="text-2xl font-semibold mb-4">Add New Student</h2>
-            <form id="student-form">
-                <!-- Hidden input to store student ID for editing -->
-                <input type="hidden" id="student-id">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="class" class="block text-sm font-medium text-gray-700">Class</label>
-                        <input type="text" id="class" name="class" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="roll_number" class="block text-sm font-medium text-gray-700">Roll Number</label>
-                        <input type="text" id="roll_number" name="roll_number" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Subjects & Marks</label>
-                    <div id="subjects-list"></div>
-                    <button type="button" id="add-subject" class="mt-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded transition-all">+ Add Subject</button>
-                </div>
-                <div class="mt-4">
-                    <span class="font-medium">Percentage: </span><span id="percentage">0</span>%
-                </div>
-                <div class="flex items-center justify-end mt-6 space-x-4">
-                    <button type="button" id="cancel-edit" class="hidden px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">Cancel</button>
-                    <button type="submit" id="submit-button" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">Add Student</button>
-                </div>
-            </form>
+      <header class="mb-8 flex justify-between items-center px-3">
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900">
+            DAV Public school Koyla Nagar
+          </h1>
+          <p class="text-gray-600 mt-2">Student management system</p>
         </div>
+        <div>
+            <img
+              src="/static/davLogo.jpg"
+              alt="DAV Public School Logo"
+              class="h-16 w-auto mt-2"
+            />
+        </div>
+      </header>
 
-        <!-- Status Message Area -->
-        <div id="status-message" class="mb-4 text-center"></div>
-
-        <!-- Students List Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <h2 class="text-2xl font-semibold p-6">Students List</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll No.</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subjects & Marks</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-list" class="bg-white divide-y divide-gray-200">
-                        <!-- Student rows will be inserted here by JavaScript -->
-                         <tr><td colspan="8" class="p-4 text-center text-gray-500">Loading students...</td></tr>
-                    </tbody>
-                </table>
+      <!-- Form for Adding and Editing Students -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 id="form-title" class="text-2xl font-semibold mb-4">
+          Add New Student
+        </h2>
+        <form id="student-form">
+          <!-- Hidden input to store student ID for editing -->
+          <input type="hidden" id="student-id" />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
             </div>
+            <div>
+              <label for="class" class="block text-sm font-medium text-gray-700"
+                >Class</label
+              >
+              <input
+                type="text"
+                id="class"
+                name="class"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label
+                for="roll_number"
+                class="block text-sm font-medium text-gray-700"
+                >Roll Number</label
+              >
+              <input
+                type="text"
+                id="roll_number"
+                name="roll_number"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Subjects & Marks</label
+            >
+            <div id="subjects-list"></div>
+            <button
+              type="button"
+              id="add-subject"
+              class="mt-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded transition-all"
+            >
+              + Add Subject
+            </button>
+          </div>
+          <div class="mt-4">
+            <span class="font-medium">Percentage: </span
+            ><span id="percentage">0</span>%
+          </div>
+          <div class="flex items-center justify-end mt-6 space-x-4">
+            <button
+              type="button"
+              id="cancel-edit"
+              class="hidden px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              id="submit-button"
+              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+            >
+              Add Student
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Status Message Area -->
+      <div id="status-message" class="mb-4 text-center"></div>
+
+      <!-- Students List Table -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <h2 class="text-2xl font-semibold p-6">Students List</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ID
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Class
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Email
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Roll No.
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Subjects & Marks
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Percentage
+                </th>
+                <th
+                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody id="student-list" class="bg-white divide-y divide-gray-200">
+              <!-- Student rows will be inserted here by JavaScript -->
+              <tr>
+                <td colspan="8" class="p-4 text-center text-gray-500">
+                  Loading students...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
 
     <script>
-        // --- Configuration ---
-        // The full URL to the backend API, including the port
-        const API_BASE_URL = 'https://school-ra0f.onrender.com';
-        const API_URL = `${API_BASE_URL}/api/students`;
+      // --- Configuration ---
+      // The full URL to the backend API, including the port
+      const API_BASE_URL = "https://school-ra0f.onrender.com";
+      const API_URL = `${API_BASE_URL}/api/students`;
 
-        // --- DOM Elements ---
-        const studentForm = document.getElementById('student-form');
-        const studentIdInput = document.getElementById('student-id');
-        const nameInput = document.getElementById('name');
-        const classInput = document.getElementById('class');
-        const emailInput = document.getElementById('email');
-        const rollInput = document.getElementById('roll_number');
-        const subjectsList = document.getElementById('subjects-list');
-        const addSubjectBtn = document.getElementById('add-subject');
-        const percentageSpan = document.getElementById('percentage');
-        const studentList = document.getElementById('student-list');
-        const formTitle = document.getElementById('form-title');
-        const submitButton = document.getElementById('submit-button');
-        const cancelEditButton = document.getElementById('cancel-edit');
-        const statusMessage = document.getElementById('status-message');
+      // --- DOM Elements ---
+      const studentForm = document.getElementById("student-form");
+      const studentIdInput = document.getElementById("student-id");
+      const nameInput = document.getElementById("name");
+      const classInput = document.getElementById("class");
+      const emailInput = document.getElementById("email");
+      const rollInput = document.getElementById("roll_number");
+      const subjectsList = document.getElementById("subjects-list");
+      const addSubjectBtn = document.getElementById("add-subject");
+      const percentageSpan = document.getElementById("percentage");
+      const studentList = document.getElementById("student-list");
+      const formTitle = document.getElementById("form-title");
+      const submitButton = document.getElementById("submit-button");
+      const cancelEditButton = document.getElementById("cancel-edit");
+      const statusMessage = document.getElementById("status-message");
 
-        // --- Functions ---
+      // --- Functions ---
 
-        /**
-         * Renders a status message to the user.
-         * @param {string} message - The message to display.
-         * @param {boolean} isError - If true, formats the message as an error.
-         */
-        function showStatusMessage(message, isError = false) {
-            statusMessage.textContent = message;
-            statusMessage.className = isError 
-                ? 'p-3 rounded-md bg-red-100 text-red-700 transition-all' 
-                : 'p-3 rounded-md bg-green-100 text-green-700 transition-all';
-            
-            // Hide the message after 3 seconds
-            setTimeout(() => {
-                statusMessage.textContent = '';
-                statusMessage.className = '';
-            }, 3000);
-        }
+      /**
+       * Renders a status message to the user.
+       * @param {string} message - The message to display.
+       * @param {boolean} isError - If true, formats the message as an error.
+       */
+      function showStatusMessage(message, isError = false) {
+        statusMessage.textContent = message;
+        statusMessage.className = isError
+          ? "p-3 rounded-md bg-red-100 text-red-700 transition-all"
+          : "p-3 rounded-md bg-green-100 text-green-700 transition-all";
 
-        /**
-         * Creates a new subject row for the form.
-         * @param {string} [subject=''] - The subject name (optional, for editing).
-         * @param {number} [marks=0] - The marks obtained (optional, for editing).
-         */
-        function createSubjectRow(subject = '', marks = '') {
-            const row = document.createElement('div');
-            row.className = 'flex items-center gap-2 mb-2';
-            row.innerHTML = `
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+          statusMessage.textContent = "";
+          statusMessage.className = "";
+        }, 3000);
+      }
+
+      /**
+       * Creates a new subject row for the form.
+       * @param {string} [subject=''] - The subject name (optional, for editing).
+       * @param {number} [marks=0] - The marks obtained (optional, for editing).
+       */
+      function createSubjectRow(subject = "", marks = "") {
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-2 mb-2";
+        row.innerHTML = `
                 <input type="text" placeholder="Subject" value="${subject}" class="subject-input px-2 py-1 border rounded w-32" required>
                 <input type="number" placeholder="Marks" value="${marks}" class="marks-input px-2 py-1 border rounded w-24" min="0" max="100" required>
                 <button type="button" class="remove-subject text-red-500 hover:text-red-700">&times;</button>
             `;
-            row.querySelector('.remove-subject').onclick = () => {
-                row.remove();
-                updatePercentage();
-            };
-            row.querySelector('.marks-input').oninput = updatePercentage;
-            subjectsList.appendChild(row);
-        }
+        row.querySelector(".remove-subject").onclick = () => {
+          row.remove();
+          updatePercentage();
+        };
+        row.querySelector(".marks-input").oninput = updatePercentage;
+        subjectsList.appendChild(row);
+      }
 
-        /**
-         * Updates the percentage display based on the marks entered.
-         */
-        function updatePercentage() {
-            const marksInputs = subjectsList.querySelectorAll('.marks-input');
-            let total = 0;
-            let count = 0;
-            marksInputs.forEach(input => {
-                const val = parseFloat(input.value);
-                if (!isNaN(val)) {
-                    total += val;
-                    count++;
-                }
-            });
-            const percent = count ? (total / count).toFixed(2) : 0;
-            percentageSpan.textContent = percent;
-        }
+      /**
+       * Updates the percentage display based on the marks entered.
+       */
+      function updatePercentage() {
+        const marksInputs = subjectsList.querySelectorAll(".marks-input");
+        let total = 0;
+        let count = 0;
+        marksInputs.forEach((input) => {
+          const val = parseFloat(input.value);
+          if (!isNaN(val)) {
+            total += val;
+            count++;
+          }
+        });
+        const percent = count ? (total / count).toFixed(2) : 0;
+        percentageSpan.textContent = percent;
+      }
 
-        // Event listener to add a new subject row
-        addSubjectBtn.onclick = () => createSubjectRow();
+      // Event listener to add a new subject row
+      addSubjectBtn.onclick = () => createSubjectRow();
 
-        /**
-         * Resets the form to its initial "Add Student" state.
-         */
-        function resetForm() {
-            studentForm.reset();
-            studentIdInput.value = '';
-            formTitle.textContent = 'Add New Student';
-            submitButton.textContent = 'Add Student';
-            cancelEditButton.classList.add('hidden');
-            subjectsList.innerHTML = '';
-            createSubjectRow();
-            updatePercentage();
-        }
+      /**
+       * Resets the form to its initial "Add Student" state.
+       */
+      function resetForm() {
+        studentForm.reset();
+        studentIdInput.value = "";
+        formTitle.textContent = "Add New Student";
+        submitButton.textContent = "Add Student";
+        cancelEditButton.classList.add("hidden");
+        subjectsList.innerHTML = "";
+        createSubjectRow();
+        updatePercentage();
+      }
 
-        /**
-         * Fetches all students from the API and renders them in the table.
-         */
-        async function fetchAndRenderStudents() {
-            try {
-                const response = await fetch(API_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const students = await response.json();
-                
-                studentList.innerHTML = ''; // Clear current list
+      /**
+       * Fetches all students from the API and renders them in the table.
+       */
+      async function fetchAndRenderStudents() {
+        try {
+          const response = await fetch(API_URL);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const students = await response.json();
 
-                if (students.length === 0) {
-                    studentList.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-gray-500">No students found.</td></tr>';
-                    return;
-                }
+          studentList.innerHTML = ""; // Clear current list
 
-                students.forEach(student => {
-                    const marksStr = student.marks.map(m => `${m.subject}: ${m.marks}`).join('<br>');
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${student.id}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${student.name}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${student.class}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${student.email}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${student.roll_number}</td>
+          if (students.length === 0) {
+            studentList.innerHTML =
+              '<tr><td colspan="8" class="p-4 text-center text-gray-500">No students found.</td></tr>';
+            return;
+          }
+
+          students.forEach((student) => {
+            const marksStr = student.marks
+              .map((m) => `${m.subject}: ${m.marks}`)
+              .join("<br>");
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${
+                          student.id
+                        }</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">${
+                          student.name
+                        }</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">${
+                          student.class
+                        }</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">${
+                          student.email
+                        }</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">${
+                          student.roll_number
+                        }</td>
                         <td class="px-6 py-4 text-sm text-gray-500">${marksStr}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${student.percentage ? student.percentage.toFixed(2) : 0}%</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">${
+                          student.percentage ? student.percentage.toFixed(2) : 0
+                        }%</td>
                         <td class="px-6 py-4 text-right text-sm font-medium space-x-2">
-                            <button onclick="handleEdit(${student.id})" class="text-indigo-600 hover:text-indigo-900 transition-all">Edit</button>
-                            <button onclick="handleDelete(${student.id})" class="text-red-600 hover:text-red-900 transition-all">Delete</button>
+                            <button onclick="handleEdit(${
+                              student.id
+                            })" class="text-indigo-600 hover:text-indigo-900 transition-all">Edit</button>
+                            <button onclick="handleDelete(${
+                              student.id
+                            })" class="text-red-600 hover:text-red-900 transition-all">Delete</button>
                         </td>
                     `;
-                    studentList.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Failed to fetch students:', error);
-                showStatusMessage('Failed to load students. Check if the backend is running.', true);
-                studentList.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-red-500">Error loading students.</td></tr>';
-            }
+            studentList.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Failed to fetch students:", error);
+          showStatusMessage(
+            "Failed to load students. Check if the backend is running.",
+            true
+          );
+          studentList.innerHTML =
+            '<tr><td colspan="8" class="p-4 text-center text-red-500">Error loading students.</td></tr>';
+        }
+      }
+
+      /**
+       * Prepares the form for editing a student.
+       * @param {number} id - The ID of the student to edit.
+       */
+      window.handleEdit = async function (id) {
+        try {
+          const response = await fetch(`${API_URL}/${id}`);
+          if (!response.ok) throw new Error("Student not found");
+          const student = await response.json();
+          studentIdInput.value = student.id;
+          nameInput.value = student.name;
+          classInput.value = student.class;
+          emailInput.value = student.email;
+          rollInput.value = student.roll_number;
+          subjectsList.innerHTML = "";
+          student.marks.forEach((m) => createSubjectRow(m.subject, m.marks));
+          updatePercentage();
+          formTitle.textContent = `Editing Student #${student.id}`;
+          submitButton.textContent = "Update Student";
+          cancelEditButton.classList.remove("hidden");
+          studentForm.scrollIntoView({ behavior: "smooth" });
+        } catch (error) {
+          showStatusMessage("Error loading student for edit.", true);
+        }
+      };
+
+      /**
+       * Deletes a student after confirmation.
+       * @param {number} id - The ID of the student to delete.
+       */
+      window.handleDelete = async function (id) {
+        // A simple confirmation dialog. For a real app, use a custom modal.
+        if (!confirm(`Are you sure you want to delete student #${id}?`)) {
+          return;
         }
 
-        /**
-         * Prepares the form for editing a student.
-         * @param {number} id - The ID of the student to edit.
-         */
-        window.handleEdit = async function(id) {
-            try {
-                const response = await fetch(`${API_URL}/${id}`);
-                if (!response.ok) throw new Error('Student not found');
-                const student = await response.json();
-                studentIdInput.value = student.id;
-                nameInput.value = student.name;
-                classInput.value = student.class;
-                emailInput.value = student.email;
-                rollInput.value = student.roll_number;
-                subjectsList.innerHTML = '';
-                student.marks.forEach(m => createSubjectRow(m.subject, m.marks));
-                updatePercentage();
-                formTitle.textContent = `Editing Student #${student.id}`;
-                submitButton.textContent = 'Update Student';
-                cancelEditButton.classList.remove('hidden');
-                studentForm.scrollIntoView({ behavior: 'smooth' });
-            } catch (error) {
-                showStatusMessage('Error loading student for edit.', true);
-            }
+        try {
+          const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "An unknown error occurred.");
+          }
+
+          const result = await response.json();
+          showStatusMessage(result.message);
+          fetchAndRenderStudents();
+        } catch (error) {
+          console.error("Failed to delete student:", error);
+          showStatusMessage(`Error: ${error.message}`, true);
         }
+      };
 
-        /**
-         * Deletes a student after confirmation.
-         * @param {number} id - The ID of the student to delete.
-         */
-        window.handleDelete = async function(id) {
-            // A simple confirmation dialog. For a real app, use a custom modal.
-            if (!confirm(`Are you sure you want to delete student #${id}?`)) {
-                return;
-            }
+      /**
+       * Handles the form submission for both creating and updating students.
+       * @param {Event} event - The form submission event.
+       */
+      async function handleFormSubmit(event) {
+        event.preventDefault();
 
-            try {
-                const response = await fetch(`${API_URL}/${id}`, {
-                    method: 'DELETE'
-                });
+        const id = studentIdInput.value;
+        const isEditing = !!id;
 
-                if (!response.ok) {
-                     const errorData = await response.json();
-                    throw new Error(errorData.error || 'An unknown error occurred.');
-                }
-                
-                const result = await response.json();
-                showStatusMessage(result.message);
-                fetchAndRenderStudents();
+        const marks = Array.from(subjectsList.querySelectorAll(".flex"))
+          .map((row) => {
+            const subject = row.querySelector(".subject-input").value;
+            const marksVal = row.querySelector(".marks-input").value;
+            return { subject, marks: parseFloat(marksVal) };
+          })
+          .filter((m) => m.subject && !isNaN(m.marks));
 
-            } catch (error) {
-                console.error('Failed to delete student:', error);
-                showStatusMessage(`Error: ${error.message}`, true);
-            }
+        const studentData = {
+          name: nameInput.value,
+          class: classInput.value,
+          email: emailInput.value,
+          roll_number: rollInput.value,
+          marks: marks,
+        };
+
+        const url = isEditing ? `${API_URL}/${id}` : API_URL;
+        const method = isEditing ? "PUT" : "POST";
+
+        try {
+          const response = await fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(studentData),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "An unknown error occurred.");
+          }
+
+          const result = await response.json();
+          showStatusMessage(result.message);
+          resetForm();
+          fetchAndRenderStudents();
+        } catch (error) {
+          console.error("Failed to submit form:", error);
+          showStatusMessage(`Error: ${error.message}`, true);
         }
+      }
 
-        /**
-         * Handles the form submission for both creating and updating students.
-         * @param {Event} event - The form submission event.
-         */
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            
-            const id = studentIdInput.value;
-            const isEditing = !!id;
-
-            const marks = Array.from(subjectsList.querySelectorAll('.flex')).map(row => {
-                const subject = row.querySelector('.subject-input').value;
-                const marksVal = row.querySelector('.marks-input').value;
-                return { subject, marks: parseFloat(marksVal) };
-            }).filter(m => m.subject && !isNaN(m.marks));
-
-            const studentData = {
-                name: nameInput.value,
-                class: classInput.value,
-                email: emailInput.value,
-                roll_number: rollInput.value,
-                marks: marks
-            };
-
-            const url = isEditing ? `${API_URL}/${id}` : API_URL;
-            const method = isEditing ? 'PUT' : 'POST';
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(studentData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'An unknown error occurred.');
-                }
-
-                const result = await response.json();
-                showStatusMessage(result.message);
-                resetForm();
-                fetchAndRenderStudents();
-
-            } catch (error) {
-                console.error('Failed to submit form:', error);
-                showStatusMessage(`Error: ${error.message}`, true);
-            }
-        }
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAndRenderStudents();
-            resetForm();
-        });
-        studentForm.addEventListener('submit', handleFormSubmit);
-        cancelEditButton.addEventListener('click', resetForm);
-
+      // --- Event Listeners ---
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchAndRenderStudents();
+        resetForm();
+      });
+      studentForm.addEventListener("submit", handleFormSubmit);
+      cancelEditButton.addEventListener("click", resetForm);
     </script>
-</body>
+  </body>
 </html>
